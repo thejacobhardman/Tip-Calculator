@@ -6,4 +6,14 @@
     <string name="about">About</string>
     <string name="about_title">Tip Calculator</string>
     <string name="about_message">Created by Jacob Hardman</string>
+    <string name="your_tip_total_is">Your Tip Total Is:</string>
+    <string-array name="tip_amount_array">
+        <item>@string/select_tip_percentage</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+    </string-array>
 </resources>
