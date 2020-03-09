@@ -4,13 +4,56 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import kotlinx.android.synthetic.main.activity_main.*
+import java.text.NumberFormat
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+
+    private var checkAmount : Double? = 0.00
+    private var tipPercentageString : String = ""
+    private var tipPercentage: Double = 0.0
+    private var tipAmount : Double = 0.00
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        tip_percentage_spinner.onItemSelectedListener = this
+
+        calculate_tip_button.setOnClickListener {
+            checkAmount = check_amount.text.toString().toDoubleOrNull() ?: 0.00
+            tipPercentage = when (tipPercentageString) {
+                "5%" -> 0.05
+                "10%" -> 0.1
+                "15%" -> 0.15
+                "20%" -> 0.2
+                "25%" -> 0.25
+                "30%" -> 0.3
+                else -> 0.0
+            }
+            when {
+                checkAmount == 0.00 -> {
+                    Toast.makeText(this, "Please enter a check amount.", Toast.LENGTH_SHORT).show()
+                }
+                tipPercentage == 0.0 -> {
+                    Toast.makeText(this, "Please select a tip percentage from the dropdown.", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    tipAmount = calculateTip(checkAmount, tipPercentage)
+                    val format : NumberFormat = NumberFormat.getCurrencyInstance()
+                    total_tip_amount_text.text = format.format(tipAmount)
+                }
+            }
+        }
+    }
+
+    private fun calculateTip(checkAmount: Double?, tipPercentage: Double): Double {
+        val checkTotal: Double = checkAmount?.toDouble() ?: 0.00
+        return checkTotal * tipPercentage
     }
 
     //About Menu Functions
@@ -35,4 +78,11 @@ class MainActivity : AppCompatActivity() {
         builder.setMessage(aboutMessage)
         builder.create().show()
     }
+
+    //Spinner Functions
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        tipPercentageString = tip_percentage_spinner.selectedItem as String
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {}
 }
