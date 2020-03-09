@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -25,16 +26,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         tip_percentage_spinner.onItemSelectedListener = this
 
         calculate_tip_button.setOnClickListener {
-            checkAmount = check_amount.text.toString().toDoubleOrNull() ?: 0.00
-            tipPercentage = when (tipPercentageString) {
-                "5%" -> 0.05
-                "10%" -> 0.1
-                "15%" -> 0.15
-                "20%" -> 0.2
-                "25%" -> 0.25
-                "30%" -> 0.3
-                else -> 0.0
-            }
+            convertValues()
+
             when {
                 checkAmount == 0.00 -> {
                     Toast.makeText(this, "Please enter a check amount.", Toast.LENGTH_SHORT).show()
@@ -46,14 +39,41 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     tipAmount = calculateTip(checkAmount, tipPercentage)
                     val format : NumberFormat = NumberFormat.getCurrencyInstance()
                     total_tip_amount_text.text = format.format(tipAmount)
+
+                    triggerAnimation()
+                    resetUi()
                 }
             }
+        }
+    }
+
+    //Program Functions
+    private fun convertValues() {
+        checkAmount = check_amount.text.toString().toDoubleOrNull() ?: 0.00
+        tipPercentage = when (tipPercentageString) {
+            "5%" -> 0.05
+            "10%" -> 0.1
+            "15%" -> 0.15
+            "20%" -> 0.2
+            "25%" -> 0.25
+            "30%" -> 0.3
+            else -> 0.0
         }
     }
 
     private fun calculateTip(checkAmount: Double?, tipPercentage: Double): Double {
         val checkTotal: Double = checkAmount?.toDouble() ?: 0.00
         return checkTotal * tipPercentage
+    }
+
+    private fun triggerAnimation() {
+        val fadeAnimation = AnimationUtils.loadAnimation(this, R.anim.fade)
+        total_tip_amount_text.startAnimation(fadeAnimation)
+    }
+
+    private fun resetUi() {
+        check_amount.text.clear()
+        tip_percentage_spinner.setSelection(0)
     }
 
     //About Menu Functions
